@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as RecuperarSenhaRouteImport } from './routes/recuperar-senha'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppTransactionsRouteImport } from './routes/app.transactions'
+import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
 
 const RecuperarSenhaRoute = RecuperarSenhaRouteImport.update({
   id: '/recuperar-senha',
@@ -28,34 +30,61 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppTransactionsRoute = AppTransactionsRouteImport.update({
+  id: '/transactions',
+  path: '/transactions',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDashboardRoute = AppDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/app': typeof AppRoute
+  '/app': typeof AppRouteWithChildren
   '/recuperar-senha': typeof RecuperarSenhaRoute
+  '/app/dashboard': typeof AppDashboardRoute
+  '/app/transactions': typeof AppTransactionsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/app': typeof AppRoute
+  '/app': typeof AppRouteWithChildren
   '/recuperar-senha': typeof RecuperarSenhaRoute
+  '/app/dashboard': typeof AppDashboardRoute
+  '/app/transactions': typeof AppTransactionsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/app': typeof AppRoute
+  '/app': typeof AppRouteWithChildren
   '/recuperar-senha': typeof RecuperarSenhaRoute
+  '/app/dashboard': typeof AppDashboardRoute
+  '/app/transactions': typeof AppTransactionsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/app' | '/recuperar-senha'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/recuperar-senha'
+    | '/app/dashboard'
+    | '/app/transactions'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/app' | '/recuperar-senha'
-  id: '__root__' | '/' | '/app' | '/recuperar-senha'
+  to: '/' | '/app' | '/recuperar-senha' | '/app/dashboard' | '/app/transactions'
+  id:
+    | '__root__'
+    | '/'
+    | '/app'
+    | '/recuperar-senha'
+    | '/app/dashboard'
+    | '/app/transactions'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AppRoute: typeof AppRoute
+  AppRoute: typeof AppRouteWithChildren
   RecuperarSenhaRoute: typeof RecuperarSenhaRoute
 }
 
@@ -82,12 +111,38 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/transactions': {
+      id: '/app/transactions'
+      path: '/transactions'
+      fullPath: '/app/transactions'
+      preLoaderRoute: typeof AppTransactionsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/dashboard': {
+      id: '/app/dashboard'
+      path: '/dashboard'
+      fullPath: '/app/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
+interface AppRouteChildren {
+  AppDashboardRoute: typeof AppDashboardRoute
+  AppTransactionsRoute: typeof AppTransactionsRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppDashboardRoute: AppDashboardRoute,
+  AppTransactionsRoute: AppTransactionsRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AppRoute: AppRoute,
+  AppRoute: AppRouteWithChildren,
   RecuperarSenhaRoute: RecuperarSenhaRoute,
 }
 export const routeTree = rootRouteImport
