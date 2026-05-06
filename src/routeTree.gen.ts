@@ -9,38 +9,190 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RecuperarSenhaRouteImport } from './routes/recuperar-senha'
+import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppTransactionsRouteImport } from './routes/app.transactions'
+import { Route as AppRelatoriosRouteImport } from './routes/app.relatorios'
+import { Route as AppPlanoRouteImport } from './routes/app.plano'
+import { Route as AppPerfilRouteImport } from './routes/app.perfil'
+import { Route as AppOrcamentosRouteImport } from './routes/app.orcamentos'
+import { Route as AppMetasRouteImport } from './routes/app.metas'
+import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
+import { Route as AppContasRouteImport } from './routes/app.contas'
+import { Route as AppCategoriesRouteImport } from './routes/app.categories'
 
+const RecuperarSenhaRoute = RecuperarSenhaRouteImport.update({
+  id: '/recuperar-senha',
+  path: '/recuperar-senha',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppTransactionsRoute = AppTransactionsRouteImport.update({
+  id: '/transactions',
+  path: '/transactions',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppRelatoriosRoute = AppRelatoriosRouteImport.update({
+  id: '/relatorios',
+  path: '/relatorios',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPlanoRoute = AppPlanoRouteImport.update({
+  id: '/plano',
+  path: '/plano',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPerfilRoute = AppPerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOrcamentosRoute = AppOrcamentosRouteImport.update({
+  id: '/orcamentos',
+  path: '/orcamentos',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMetasRoute = AppMetasRouteImport.update({
+  id: '/metas',
+  path: '/metas',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDashboardRoute = AppDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppContasRoute = AppContasRouteImport.update({
+  id: '/contas',
+  path: '/contas',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCategoriesRoute = AppCategoriesRouteImport.update({
+  id: '/categories',
+  path: '/categories',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
+  '/recuperar-senha': typeof RecuperarSenhaRoute
+  '/app/categories': typeof AppCategoriesRoute
+  '/app/contas': typeof AppContasRoute
+  '/app/dashboard': typeof AppDashboardRoute
+  '/app/metas': typeof AppMetasRoute
+  '/app/orcamentos': typeof AppOrcamentosRoute
+  '/app/perfil': typeof AppPerfilRoute
+  '/app/plano': typeof AppPlanoRoute
+  '/app/relatorios': typeof AppRelatoriosRoute
+  '/app/transactions': typeof AppTransactionsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
+  '/recuperar-senha': typeof RecuperarSenhaRoute
+  '/app/categories': typeof AppCategoriesRoute
+  '/app/contas': typeof AppContasRoute
+  '/app/dashboard': typeof AppDashboardRoute
+  '/app/metas': typeof AppMetasRoute
+  '/app/orcamentos': typeof AppOrcamentosRoute
+  '/app/perfil': typeof AppPerfilRoute
+  '/app/plano': typeof AppPlanoRoute
+  '/app/relatorios': typeof AppRelatoriosRoute
+  '/app/transactions': typeof AppTransactionsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
+  '/recuperar-senha': typeof RecuperarSenhaRoute
+  '/app/categories': typeof AppCategoriesRoute
+  '/app/contas': typeof AppContasRoute
+  '/app/dashboard': typeof AppDashboardRoute
+  '/app/metas': typeof AppMetasRoute
+  '/app/orcamentos': typeof AppOrcamentosRoute
+  '/app/perfil': typeof AppPerfilRoute
+  '/app/plano': typeof AppPlanoRoute
+  '/app/relatorios': typeof AppRelatoriosRoute
+  '/app/transactions': typeof AppTransactionsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/recuperar-senha'
+    | '/app/categories'
+    | '/app/contas'
+    | '/app/dashboard'
+    | '/app/metas'
+    | '/app/orcamentos'
+    | '/app/perfil'
+    | '/app/plano'
+    | '/app/relatorios'
+    | '/app/transactions'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/app'
+    | '/recuperar-senha'
+    | '/app/categories'
+    | '/app/contas'
+    | '/app/dashboard'
+    | '/app/metas'
+    | '/app/orcamentos'
+    | '/app/perfil'
+    | '/app/plano'
+    | '/app/relatorios'
+    | '/app/transactions'
+  id:
+    | '__root__'
+    | '/'
+    | '/app'
+    | '/recuperar-senha'
+    | '/app/categories'
+    | '/app/contas'
+    | '/app/dashboard'
+    | '/app/metas'
+    | '/app/orcamentos'
+    | '/app/perfil'
+    | '/app/plano'
+    | '/app/relatorios'
+    | '/app/transactions'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
+  RecuperarSenhaRoute: typeof RecuperarSenhaRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/recuperar-senha': {
+      id: '/recuperar-senha'
+      path: '/recuperar-senha'
+      fullPath: '/recuperar-senha'
+      preLoaderRoute: typeof RecuperarSenhaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +200,102 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/transactions': {
+      id: '/app/transactions'
+      path: '/transactions'
+      fullPath: '/app/transactions'
+      preLoaderRoute: typeof AppTransactionsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/relatorios': {
+      id: '/app/relatorios'
+      path: '/relatorios'
+      fullPath: '/app/relatorios'
+      preLoaderRoute: typeof AppRelatoriosRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/plano': {
+      id: '/app/plano'
+      path: '/plano'
+      fullPath: '/app/plano'
+      preLoaderRoute: typeof AppPlanoRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/perfil': {
+      id: '/app/perfil'
+      path: '/perfil'
+      fullPath: '/app/perfil'
+      preLoaderRoute: typeof AppPerfilRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/orcamentos': {
+      id: '/app/orcamentos'
+      path: '/orcamentos'
+      fullPath: '/app/orcamentos'
+      preLoaderRoute: typeof AppOrcamentosRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/metas': {
+      id: '/app/metas'
+      path: '/metas'
+      fullPath: '/app/metas'
+      preLoaderRoute: typeof AppMetasRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/dashboard': {
+      id: '/app/dashboard'
+      path: '/dashboard'
+      fullPath: '/app/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/contas': {
+      id: '/app/contas'
+      path: '/contas'
+      fullPath: '/app/contas'
+      preLoaderRoute: typeof AppContasRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/categories': {
+      id: '/app/categories'
+      path: '/categories'
+      fullPath: '/app/categories'
+      preLoaderRoute: typeof AppCategoriesRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
+interface AppRouteChildren {
+  AppCategoriesRoute: typeof AppCategoriesRoute
+  AppContasRoute: typeof AppContasRoute
+  AppDashboardRoute: typeof AppDashboardRoute
+  AppMetasRoute: typeof AppMetasRoute
+  AppOrcamentosRoute: typeof AppOrcamentosRoute
+  AppPerfilRoute: typeof AppPerfilRoute
+  AppPlanoRoute: typeof AppPlanoRoute
+  AppRelatoriosRoute: typeof AppRelatoriosRoute
+  AppTransactionsRoute: typeof AppTransactionsRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppCategoriesRoute: AppCategoriesRoute,
+  AppContasRoute: AppContasRoute,
+  AppDashboardRoute: AppDashboardRoute,
+  AppMetasRoute: AppMetasRoute,
+  AppOrcamentosRoute: AppOrcamentosRoute,
+  AppPerfilRoute: AppPerfilRoute,
+  AppPlanoRoute: AppPlanoRoute,
+  AppRelatoriosRoute: AppRelatoriosRoute,
+  AppTransactionsRoute: AppTransactionsRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
+  RecuperarSenhaRoute: RecuperarSenhaRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
