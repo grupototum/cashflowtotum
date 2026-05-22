@@ -97,20 +97,27 @@ function TransactionsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <HudLabel>OPERAÇÕES</HudLabel>
-          <h1 className="font-display text-3xl md:text-5xl uppercase mt-1">Transações</h1>
+      <div className="relative border border-border p-5 md:p-6 overflow-hidden">
+        <div className="absolute inset-0 grid-bg opacity-30 pointer-events-none" />
+        <div className="absolute inset-0 scanline pointer-events-none" />
+        <div className="relative flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <HudLabel>OPERAÇÕES · LEDGER</HudLabel>
+            <h1 className="font-display text-3xl md:text-5xl uppercase mt-1 tracking-tight">Transações</h1>
+            <p className="text-muted-foreground mt-2 text-sm font-mono">
+              [ {filtered.length.toString().padStart(4, "0")} REGISTROS ]
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              setEditing(null);
+              setOpen(true);
+            }}
+            className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2.5 text-xs uppercase tracking-wider font-medium hover:opacity-90"
+          >
+            <Plus className="size-4" /> Nova transação
+          </button>
         </div>
-        <button
-          onClick={() => {
-            setEditing(null);
-            setOpen(true);
-          }}
-          className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2.5 text-xs uppercase tracking-wider font-medium"
-        >
-          <Plus className="size-4" /> Nova transação
-        </button>
       </div>
 
       <BrutalCard className="p-4">
@@ -163,12 +170,21 @@ function TransactionsPage() {
                   const c = t.category_id ? catMap.get(t.category_id) : null;
                   const a = t.account_id ? accMap.get(t.account_id) : null;
                   return (
-                    <tr key={t.id} className="border-b border-border last:border-0 hover:bg-[var(--surface-elevated)]/40">
+                    <tr key={t.id} className="border-b border-border last:border-0 hover:bg-[var(--surface-elevated)]/40 transition-colors group">
                       <td className="px-4 py-3 font-mono text-xs text-muted-foreground whitespace-nowrap">
                         {fmtDate(t.date)}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
+                          <span
+                            className={`hud-label border px-1.5 py-0.5 ${
+                              t.type === "income"
+                                ? "border-primary text-primary"
+                                : "border-[color:var(--flare)] text-[color:var(--flare)]"
+                            }`}
+                          >
+                            {t.type === "income" ? "IN" : "OUT"}
+                          </span>
                           <span className="text-base">{c?.emoji ?? "💸"}</span>
                           <span className="truncate">{t.description}</span>
                         </div>
@@ -180,7 +196,7 @@ function TransactionsPage() {
                         {a?.name ?? "—"}
                       </td>
                       <td
-                        className={`px-4 py-3 text-right font-mono tabular-nums ${
+                        className={`px-4 py-3 text-right font-mono tabular-nums whitespace-nowrap ${
                           t.type === "income" ? "text-primary" : "text-[color:var(--flare)]"
                         }`}
                       >

@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { brl, monthLabel } from "@/lib/format";
 import { HudLabel } from "@/components/hud-label";
 import { BrutalCard } from "@/components/brutal-card";
+import { KpiTile } from "@/components/kpi-tile";
 import { Plus, Trash2, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 
@@ -113,6 +114,19 @@ function BudgetsPage() {
         </div>
       </div>
 
+      {budgets.length > 0 && (() => {
+        const totalBudget = budgets.reduce((s, b) => s + Number(b.amount), 0);
+        const totalSpent = budgets.reduce((s, b) => s + (spentMap.get(b.category_id) ?? 0), 0);
+        const remaining = totalBudget - totalSpent;
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <KpiTile label="Total orçado" value={totalBudget} tone="info" />
+            <KpiTile label="Total gasto" value={totalSpent} tone="flare" />
+            <KpiTile label="Restante" value={remaining} tone={remaining >= 0 ? "lime" : "flare"} />
+          </div>
+        );
+      })()}
+
       {budgets.length === 0 ? (
         <BrutalCard className="p-12 text-center">
           <div className="font-mono text-xs text-muted-foreground uppercase">[ NENHUM ORÇAMENTO PARA O MÊS ]</div>
@@ -122,7 +136,13 @@ function BudgetsPage() {
         </BrutalCard>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {budgets.map((b) => {
+          {[...budgets]
+            .sort((a, b) => {
+              const pa = (spentMap.get(a.category_id) ?? 0) / Number(a.amount);
+              const pb = (spentMap.get(b.category_id) ?? 0) / Number(b.amount);
+              return pb - pa;
+            })
+            .map((b) => {
             const c = catMap.get(b.category_id);
             const used = spentMap.get(b.category_id) ?? 0;
             const pct = Math.min(100, (used / Number(b.amount)) * 100);
@@ -134,6 +154,11 @@ function BudgetsPage() {
                   <div className="flex items-center gap-2">
                     <span className="text-xl">{c?.emoji ?? "💸"}</span>
                     <span className="font-medium">{c?.name ?? "—"}</span>
+                    {over && (
+                      <span className="hud-label border border-[color:var(--flare)] text-[color:var(--flare)] px-1.5 py-0.5">
+                        OVER
+                      </span>
+                    )}
                   </div>
                   <button onClick={() => confirm("Remover?") && del.mutate(b.id)} className="text-muted-foreground hover:text-[color:var(--flare)]">
                     <Trash2 className="size-3.5" />
@@ -143,8 +168,13 @@ function BudgetsPage() {
                   <span className={over ? "text-[color:var(--flare)]" : ""}>{brl(used)}</span>
                   <span className="text-muted-foreground">/ {brl(Number(b.amount))}</span>
                 </div>
-                <div className="h-2 border border-border bg-background overflow-hidden">
-                  <div className="h-full transition-all" style={{ width: `${pct}%`, background: barColor }} />
+                <div className="relative h-2 border border-border bg-background overflow-hidden">
+                  <div className="absolute inset-0 flex pointer-events-none">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="flex-1 border-r border-border last:border-0" />
+                    ))}
+                  </div>
+                  <div className="h-full transition-all relative" style={{ width: `${pct}%`, background: barColor }} />
                 </div>
                 <div className="hud-label mt-2 text-right">{pct.toFixed(0)}% USADO</div>
               </BrutalCard>
