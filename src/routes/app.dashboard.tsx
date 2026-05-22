@@ -136,33 +136,39 @@ function DashboardPage() {
     setYear(d.getFullYear());
   };
 
+  const savingsRate = income > 0 ? (balance / income) * 100 : 0;
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-        <div>
-          <HudLabel>VISÃO GERAL</HudLabel>
-          <h1 className="font-display text-3xl md:text-5xl uppercase mt-1">Dashboard</h1>
-          <p className="text-muted-foreground mt-2 text-sm">
-            Painel consolidado · {monthLabel(month, year)}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button onClick={() => shiftMonth(-1)} className="border border-border p-2 hover:border-primary">
-            <ChevronLeft className="size-4" />
-          </button>
-          <div className="border border-border px-4 py-2 text-sm uppercase font-mono">
-            {monthLabel(month, year)}
+      <div className="relative border border-border p-5 md:p-6 overflow-hidden">
+        <div className="absolute inset-0 grid-bg opacity-30 pointer-events-none" />
+        <div className="absolute inset-0 scanline pointer-events-none" />
+        <div className="relative flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+          <div>
+            <HudLabel>COCKPIT · VISÃO GERAL</HudLabel>
+            <h1 className="font-display text-3xl md:text-5xl uppercase mt-1 tracking-tight">Dashboard</h1>
+            <p className="text-muted-foreground mt-2 text-sm font-mono">
+              [ {monthLabel(month, year).toUpperCase()} ]
+            </p>
           </div>
-          <button onClick={() => shiftMonth(1)} className="border border-border p-2 hover:border-primary">
-            <ChevronRight className="size-4" />
-          </button>
-          <Link
-            to="/app/transactions"
-            className="hidden md:inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 text-xs uppercase tracking-wider font-medium ml-2"
-          >
-            <Plus className="size-4" /> Nova transação
-          </Link>
+
+          <div className="flex items-center gap-2">
+            <button onClick={() => shiftMonth(-1)} className="border border-border p-2 hover:border-primary transition-colors">
+              <ChevronLeft className="size-4" />
+            </button>
+            <div className="border border-border px-4 py-2 text-sm uppercase font-mono bg-background">
+              {monthLabel(month, year)}
+            </div>
+            <button onClick={() => shiftMonth(1)} className="border border-border p-2 hover:border-primary transition-colors">
+              <ChevronRight className="size-4" />
+            </button>
+            <Link
+              to="/app/transactions"
+              className="hidden md:inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 text-xs uppercase tracking-wider font-medium ml-2 hover:opacity-90"
+            >
+              <Plus className="size-4" /> Nova transação
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -171,7 +177,13 @@ function DashboardPage() {
         <KpiTile label="Saldo do mês" value={balance} tone={balance >= 0 ? "lime" : "flare"} />
         <KpiTile label="Receitas" value={income} tone="lime" />
         <KpiTile label="Despesas" value={expense} tone="flare" />
-        <KpiTile label="Transações" value={monthTxs.length} tone="info" format="number" />
+        <KpiTile
+          label="Taxa de poupança"
+          value={savingsRate}
+          tone={savingsRate >= 0 ? "info" : "flare"}
+          format="number"
+          delta="%"
+        />
       </div>
 
       {/* Charts */}
