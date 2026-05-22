@@ -171,6 +171,80 @@ function TransactionsPage() {
       toast.error("Não foi possível copiar — copie manualmente da barra de endereço");
     }
   };
+  const buildExportRows = () =>
+    filtered.map((t) => {
+      const c = t.category_id ? catMap.get(t.category_id) : null;
+      const a = t.account_id ? accMap.get(t.account_id) : null;
+      return [
+        t.date,
+        t.description,
+        t.type === "income" ? "Receita" : "Despesa",
+        c?.name ?? "",
+        a?.name ?? "",
+        Number(t.amount).toFixed(2).replace(".", ","),
+      ];
+    });
+
+  const periodLabel = () => {
+    if (from && to) return `${fmtDate(from)} a ${fmtDate(to)}`;
+    if (from) return `desde ${fmtDate(from)}`;
+    if (to) return `até ${fmtDate(to)}`;
+    return "Todo o período";
+  };
+
+  const fileSlug = () => {
+    const a = from || "inicio";
+    const b = to || new Date().toISOString().slice(0, 10);
+    return `${a}_${b}`;
+  };
+
+  const handleExportCSV = () => {
+    if (!filtered.length) return toast.error("Nenhuma transação no recorte atual");
+    exportCSV(
+      `transacoes_${fileSlug()}.csv`,
+      ["Data", "Descrição", "Tipo", "Categoria", "Conta", "Valor (R$)"],
+      buildExportRows(),
+    );
+    toast.success(`${filtered.length} transações exportadas`);
+  };
+
+  const handleExportPDF = () => {
+    if (!filtered.length) return toast.error("Nenhuma transação no recorte atual");
+    const rows = filtered.map((t) => {
+      const c = t.category_id ? catMap.get(t.category_id) : null;
+      const a = t.account_id ? accMap.get(t.account_id) : null;
+      const sign = t.type === "income" ? "+" : "−";
+      return [
+        fmtDate(t.date),
+        t.description,
+        c?.name ?? "—",
+        a?.name ?? "—",
+        `${sign} ${brl(Number(t.amount))}`,
+      ];
+    });
+    exportPDF({
+      title: "Relatório de transações",
+      subtitle: periodLabel(),
+      meta: {
+        Registros: String(filtered.length),
+        Tipo: type === "all" ? "Todos" : type === "income" ? "Receitas" : "Despesas",
+        Categoria: categoryId ? cats.find((c) => c.id === categoryId)?.name ?? "—" : "Todas",
+        Conta: accountId ? accs.find((a) => a.id === accountId)?.name ?? "—" : "Todas",
+        ...(q ? { Busca: q } : {}),
+      },
+      summary: [
+        { label: "Receitas", value: brl(totals.income) },
+        { label: "Despesas", value: brl(totals.expense) },
+        { label: "Saldo", value: brl(totals.net) },
+      ],
+      headers: ["Data", "Descrição", "Categoria", "Conta", "Valor"],
+      rows,
+      align: ["left", "left", "left", "left", "right"],
+      filename: `transacoes_${fileSlug()}.pdf`,
+    });
+    toast.success("PDF gerado");
+  };
+
 
   const del = useMutation({
     mutationFn: async (id: string) => {
