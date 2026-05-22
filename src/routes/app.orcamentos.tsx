@@ -98,6 +98,69 @@ function BudgetsPage() {
     setYear(d.getFullYear());
   };
 
+  const buildBudgetRows = () =>
+    [...budgets]
+      .sort((a, b) => {
+        const pa = (spentMap.get(a.category_id) ?? 0) / Number(a.amount);
+        const pb = (spentMap.get(b.category_id) ?? 0) / Number(b.amount);
+        return pb - pa;
+      })
+      .map((b) => {
+        const c = catMap.get(b.category_id);
+        const used = spentMap.get(b.category_id) ?? 0;
+        const limit = Number(b.amount);
+        const pct = limit > 0 ? (used / limit) * 100 : 0;
+        return { name: c?.name ?? "—", used, limit, pct, remaining: limit - used };
+      });
+
+  const handleExportCSV = () => {
+    if (!budgets.length) return toast.error("Nenhum orçamento para exportar");
+    const rows = buildBudgetRows().map((r) => [
+      r.name,
+      r.limit.toFixed(2).replace(".", ","),
+      r.used.toFixed(2).replace(".", ","),
+      r.remaining.toFixed(2).replace(".", ","),
+      `${r.pct.toFixed(1)}%`,
+      r.used > r.limit ? "OVER" : "OK",
+    ]);
+    exportCSV(
+      `orcamentos_${year}-${String(month).padStart(2, "0")}.csv`,
+      ["Categoria", "Limite (R$)", "Gasto (R$)", "Restante (R$)", "% Usado", "Status"],
+      rows,
+    );
+    toast.success("Orçamentos exportados");
+  };
+
+  const handleExportPDF = () => {
+    if (!budgets.length) return toast.error("Nenhum orçamento para exportar");
+    const data = buildBudgetRows();
+    const totalLimit = data.reduce((s, r) => s + r.limit, 0);
+    const totalUsed = data.reduce((s, r) => s + r.used, 0);
+    const rows = data.map((r) => [
+      r.name,
+      brl(r.limit),
+      brl(r.used),
+      brl(r.remaining),
+      `${r.pct.toFixed(0)}%`,
+      r.used > r.limit ? "OVER" : "OK",
+    ]);
+    exportPDF({
+      title: "Relatório de orçamentos",
+      subtitle: monthLabel(month, year),
+      meta: { Categorias: String(data.length) },
+      summary: [
+        { label: "Total orçado", value: brl(totalLimit) },
+        { label: "Total gasto", value: brl(totalUsed) },
+        { label: "Restante", value: brl(totalLimit - totalUsed) },
+      ],
+      headers: ["Categoria", "Limite", "Gasto", "Restante", "% Usado", "Status"],
+      rows,
+      align: ["left", "right", "right", "right", "right", "center"],
+      filename: `orcamentos_${year}-${String(month).padStart(2, "0")}.pdf`,
+    });
+    toast.success("PDF gerado");
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -110,7 +173,8 @@ function BudgetsPage() {
           <button onClick={() => shift(-1)} className="border border-border p-2 hover:border-primary"><ChevronLeft className="size-4" /></button>
           <div className="border border-border px-4 py-2 text-sm uppercase font-mono">{monthLabel(month, year)}</div>
           <button onClick={() => shift(1)} className="border border-border p-2 hover:border-primary"><ChevronRight className="size-4" /></button>
-          <button onClick={() => setOpen(true)} className="ml-2 inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 text-xs uppercase tracking-wider font-medium">
+          <ExportMenu onCSV={handleExportCSV} onPDF={handleExportPDF} disabled={!budgets.length} />
+          <button onClick={() => setOpen(true)} className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 text-xs uppercase tracking-wider font-medium">
             <Plus className="size-4" /> Novo
           </button>
         </div>
