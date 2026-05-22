@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { brl, monthLabel } from "@/lib/format";
 import { HudLabel } from "@/components/hud-label";
 import { BrutalCard } from "@/components/brutal-card";
+import { KpiTile } from "@/components/kpi-tile";
 import { Plus, Trash2, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 
