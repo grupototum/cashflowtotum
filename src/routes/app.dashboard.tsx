@@ -21,6 +21,8 @@ import {
   YAxis,
 } from "recharts";
 import { ArrowDownRight, ArrowUpRight, Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import { useBudgetAlerts } from "@/lib/use-budget-alerts";
+import { BudgetAlertsBanner } from "@/components/budget-alerts-banner";
 
 export const Route = createFileRoute("/app/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — CashFlow" }] }),
@@ -138,6 +140,8 @@ function DashboardPage() {
 
   const savingsRate = income > 0 ? (balance / income) * 100 : 0;
 
+  const { alerts: budgetAlerts } = useBudgetAlerts();
+
   return (
     <div className="space-y-6">
       <div className="relative border border-border p-5 md:p-6 overflow-hidden">
@@ -185,6 +189,9 @@ function DashboardPage() {
           delta="%"
         />
       </div>
+
+      {/* Budget alerts */}
+      <BudgetAlertsBanner alerts={budgetAlerts} />
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
