@@ -4,7 +4,7 @@ import { z } from "zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { brl, fmtDate } from "@/lib/format";
 import { HudLabel } from "@/components/hud-label";
 import { BrutalCard } from "@/components/brutal-card";
