@@ -653,6 +653,8 @@ function TxModal({
     if (!suggestion || !suggestedCategory) return;
     if (suggestion.kind !== type) setType(suggestion.kind);
     setCategoryId(suggestedCategory.id);
+    lastAutoCategoryId.current = suggestedCategory.id;
+    lastAutoType.current = suggestion.kind;
     setDismissedSuggestion(true);
     toast.success(`Categoria "${suggestedCategory.name}" aplicada`);
   };
