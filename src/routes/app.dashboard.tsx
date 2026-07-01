@@ -21,6 +21,8 @@ import {
   YAxis,
 } from "recharts";
 import { ArrowDownRight, ArrowUpRight, Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import { useBudgetAlerts } from "@/lib/use-budget-alerts";
+import { BudgetAlertsBanner } from "@/components/budget-alerts-banner";
 
 export const Route = createFileRoute("/app/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — CashFlow" }] }),
