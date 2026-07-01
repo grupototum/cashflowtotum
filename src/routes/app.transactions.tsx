@@ -4,7 +4,7 @@ import { z } from "zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { brl, fmtDate } from "@/lib/format";
 import { HudLabel } from "@/components/hud-label";
 import { BrutalCard } from "@/components/brutal-card";
@@ -615,15 +615,31 @@ function TxModal({
     );
   }, [suggestion, categories]);
 
-  // Auto-preenche categoria apenas quando o campo está vazio (não sobrescreve escolha do usuário)
+  // Rastreia último auto-preenchimento para permitir substituição em tempo real
+  // sem sobrescrever a escolha manual do usuário.
+  const lastAutoCategoryId = useRef<string | null>(null);
+  const lastAutoType = useRef<typeof type | null>(null);
+
   useEffect(() => {
     if (tx) return;
-    if (!suggestedCategory || categoryId) return;
-    setCategoryId(suggestedCategory.id);
-    if (suggestion && suggestion.kind !== type) setType(suggestion.kind);
-    setDismissedSuggestion(true);
+    if (!suggestedCategory) return;
+
+    // Só auto-aplica se o campo está vazio OU se o valor atual foi definido
+    // pela sugestão anterior (usuário não mexeu manualmente).
+    const categoryUntouched = !categoryId || categoryId === lastAutoCategoryId.current;
+    const typeUntouched = lastAutoType.current === null || type === lastAutoType.current;
+
+    if (categoryUntouched && suggestedCategory.id !== categoryId) {
+      setCategoryId(suggestedCategory.id);
+      lastAutoCategoryId.current = suggestedCategory.id;
+    }
+    if (typeUntouched && suggestion && suggestion.kind !== type) {
+      setType(suggestion.kind);
+      lastAutoType.current = suggestion.kind;
+    }
+    setDismissedSuggestion(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [suggestedCategory?.id]);
+  }, [suggestedCategory?.id, suggestion?.kind]);
 
   // Se trocar tipo e categoria atual não bater, limpa
   useEffect(() => {
@@ -637,6 +653,8 @@ function TxModal({
     if (!suggestion || !suggestedCategory) return;
     if (suggestion.kind !== type) setType(suggestion.kind);
     setCategoryId(suggestedCategory.id);
+    lastAutoCategoryId.current = suggestedCategory.id;
+    lastAutoType.current = suggestion.kind;
     setDismissedSuggestion(true);
     toast.success(`Categoria "${suggestedCategory.name}" aplicada`);
   };
